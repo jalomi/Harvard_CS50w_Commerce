@@ -1,0 +1,17 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <h2>New Listing</h2>
+
+    {% if error %}
+    {{ error }}
+    <br>
+    <a href="{% url 'index' %}">Back to Home</a>
+    {% else %}
+    <form method="post" id="newlisting">
+        {% csrf_token %}
+        {{ form }}
+        <input type="submit" value="Add Page">
+    </form>
+    {% endif %}
+{% endblock %}

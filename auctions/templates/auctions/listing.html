@@ -1,0 +1,17 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <h2>{{ title }}</h2>
+
+    {% if error %}
+    {{ error }}
+    <br>
+    <a href="{% url 'index' %}">Back to Home</a>
+    {% else %}
+    <div>
+        Posted by {{ user }}
+    </div>
+    
+    TODO
+    {% endif %}
+{% endblock %}
