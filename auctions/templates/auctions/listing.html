@@ -1,7 +1,7 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
-    <h2>{{ title }}</h2>
+    <h2>Listing: {{ title }}</h2>
 
     {% if error %}
     {{ error }}
@@ -9,10 +9,28 @@
     <a href="{% url 'index' %}">Back to Home</a>
     {% else %}
     <div>
-        Posted by {{ user }}
+        Listed by {{ user }}
     </div>
     
-    TODO
+    <div>
+        TODO image
+    </div>
+
+    <div>
+        TODO current price
+    </div>
+
+    <div>
+        TODO category
+    </div>
+
+    <div>
+        TODO bid or close auction
+    </div>
+
+    <div>
+        {{ description }}
+    </div>
 
     {% if in_watchlist %}
     <div>
@@ -31,5 +49,9 @@
         </form>
     </div>
     {% endif %}
+
+    <div>
+        TODO comments
+    </div>
     {% endif %}
 {% endblock %}

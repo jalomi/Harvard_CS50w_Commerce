@@ -118,6 +118,7 @@ def listing(request, id):
     return render(request, "auctions/listing.html", {
         "id": listing.id,
         "title": listing.title,
+        "description": listing.description,
         "user": listing.user,
         "in_watchlist": in_watchlist,
 
