@@ -20,9 +20,11 @@
         TODO current price
     </div>
 
+    {% if category %}
     <div>
-        TODO category
+        Category: <a href="{% url "category" category %}">{{ category }}</a>
     </div>
+    {% endif %}
 
     <div>
         TODO bid or close auction

@@ -5,7 +5,7 @@ from django.shortcuts import render
 from django.urls import reverse
 from django import forms
 
-from .models import User, Listing
+from .models import User, Listing, Category, Comment
 
 class NewListingForm(forms.Form):
     title = forms.CharField(label="",
@@ -90,7 +90,13 @@ def new_listing(request):
             description = form.cleaned_data["description"]
             starting_bid = form.cleaned_data["starting_bid"]
             img_url = form.cleaned_data["img_url"]
-            category = form.cleaned_data["category"]
+            category_name = form.cleaned_data["category"]
+
+            category = None
+            if category_name:
+                category = Category.objects.filter(name=category_name).first()
+                if not category:
+                    category = Category.objects.create(name=category_name)
 
             listing = Listing(user=user,
                               title=title,
@@ -115,12 +121,16 @@ def new_listing(request):
 def listing(request, id):
     listing = Listing.objects.get(pk=id)
     in_watchlist = listing in User.objects.get(username=request.user).watchlist.all()
+    category_name = None
+    if listing.category:
+        category_name = listing.category.name
     return render(request, "auctions/listing.html", {
         "id": listing.id,
         "title": listing.title,
         "description": listing.description,
         "user": listing.user,
         "in_watchlist": in_watchlist,
+        "category": category_name,
 
     })
 
@@ -144,3 +154,16 @@ def unwatch(request):
         user = User.objects.get(username=request.user)
         user.watchlist.remove(listing)
         return HttpResponseRedirect(reverse("index"))
+    
+def categories(request):
+    return render(request, "auctions/categories.html", {
+        "categories": Category.objects.all(),
+    })
+
+def category(request, name):
+    category = Category.objects.filter(name=name).first()
+    listings = Listing.objects.filter(category=category).all()
+    return render(request, "auctions/category.html", {
+        "name": category.name,
+        "listings": listings,
+    })
