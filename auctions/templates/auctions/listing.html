@@ -11,9 +11,13 @@
     <div>
         Listed by {{ user }}
     </div>
-    
+
     <div>
-        TODO image
+    {% if image %}
+        <img src="{{image}}" alt="{{ title }}">
+    {% else %}
+        No image avaliable
+    {% endif %}
     </div>
 
     <div>

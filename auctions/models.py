@@ -15,6 +15,7 @@ class Listing(models.Model):
     starting_bid = models.IntegerField()
     img_url = models.CharField(max_length=200)
     category = models.ForeignKey(Category, on_delete=models.CASCADE, blank=True, null=True)
+    price = models.IntegerField()
 
     def __str__(self):
         return f"{self.title} starting at {self.starting_bid} by {self.user}"

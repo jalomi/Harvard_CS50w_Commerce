@@ -103,7 +103,8 @@ def new_listing(request):
                               description=description,
                               starting_bid=starting_bid,
                               img_url=img_url,
-                              category=category)
+                              category=category,
+                              price=starting_bid)
             
             listing.save()
 
@@ -124,6 +125,7 @@ def listing(request, id):
     category_name = None
     if listing.category:
         category_name = listing.category.name
+    image = listing.img_url
     return render(request, "auctions/listing.html", {
         "id": listing.id,
         "title": listing.title,
@@ -131,6 +133,7 @@ def listing(request, id):
         "user": listing.user,
         "in_watchlist": in_watchlist,
         "category": category_name,
+        "image": image,
 
     })
 
