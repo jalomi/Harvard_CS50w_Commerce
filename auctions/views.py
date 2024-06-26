@@ -114,7 +114,32 @@ def new_listing(request):
     
 def listing(request, id):
     listing = Listing.objects.get(pk=id)
+    in_watchlist = listing in User.objects.get(username=request.user).watchlist.all()
     return render(request, "auctions/listing.html", {
+        "id": listing.id,
         "title": listing.title,
         "user": listing.user,
+        "in_watchlist": in_watchlist,
+
     })
+
+def watchlist(request):
+    user = User.objects.get(username=request.user)
+    return render(request, "auctions/watchlist.html", {
+        "user": user,
+        "listings": user.watchlist.all(),
+    })
+
+def watch(request):
+    if request.method == "POST":
+        listing = Listing.objects.get(pk=request.POST["id"])
+        user = User.objects.get(username=request.user)
+        user.watchlist.add(listing)
+        return HttpResponseRedirect(reverse("index"))
+    
+def unwatch(request):
+    if request.method == "POST":
+        listing = Listing.objects.get(pk=request.POST["id"])
+        user = User.objects.get(username=request.user)
+        user.watchlist.remove(listing)
+        return HttpResponseRedirect(reverse("index"))

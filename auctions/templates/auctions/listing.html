@@ -13,5 +13,23 @@
     </div>
     
     TODO
+
+    {% if in_watchlist %}
+    <div>
+        <form action="{% url "unwatch" %}" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="id" value={{id}}>
+            <input type="submit" value="Remove From Watchlist">
+        </form>
+    </div>
+    {% else %}
+    <div>
+        <form action="{% url "watch" %}" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="id" value={{id}}>
+            <input type="submit" value="Add to Watchlist">
+        </form>
+    </div>
+    {% endif %}
     {% endif %}
 {% endblock %}
