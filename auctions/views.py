@@ -121,11 +121,18 @@ def new_listing(request):
     
 def listing(request, id):
     listing = Listing.objects.get(pk=id)
-    in_watchlist = listing in User.objects.get(username=request.user).watchlist.all()
+
+    in_watchlist = False
+    if request.user.is_authenticated:
+        in_watchlist = listing in User.objects.get(username=request.user).watchlist.all()
+
     category_name = None
+
     if listing.category:
         category_name = listing.category.name
+
     image = listing.img_url
+
     return render(request, "auctions/listing.html", {
         "id": listing.id,
         "title": listing.title,

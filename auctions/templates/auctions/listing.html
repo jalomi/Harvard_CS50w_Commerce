@@ -30,14 +30,17 @@
     </div>
     {% endif %}
 
+    {% if user.is_authenticated %}
     <div>
         TODO bid or close auction
     </div>
+    {% endif %}
 
     <div>
         {{ description }}
     </div>
 
+    {% if user.is_authenticated %}
     {% if in_watchlist %}
     <div>
         <form action="{% url "unwatch" %}" method="post">
@@ -55,9 +58,15 @@
         </form>
     </div>
     {% endif %}
+    {% endif %}
 
-    <div>
+    <div> 
         TODO comments
     </div>
+    {% if user.is_authenticated %}
+    <div>
+        TODO add comment
+    </div>
+    {% endif %}
     {% endif %}
 {% endblock %}
