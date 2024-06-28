@@ -22,6 +22,10 @@ class NewListingForm(forms.Form):
                                widget=forms.TextInput(attrs={"placeholder":"Category (Optional)"}))
 
 
+class NewCommentForm(forms.Form):
+    text = forms.CharField(label="",
+                            widget=forms.TextInput(attrs={"placeholder":"Add Comment"}))
+
 def index(request):
     return render(request, "auctions/index.html", {
         "listings": Listing.objects.all(),
@@ -85,7 +89,6 @@ def new_listing(request):
     if request.method == "POST":
         form = NewListingForm(request.POST)
         if form.is_valid():
-            user = User.objects.get(username=request.user)
             title = form.cleaned_data["title"]
             description = form.cleaned_data["description"]
             starting_bid = form.cleaned_data["starting_bid"]
@@ -98,7 +101,7 @@ def new_listing(request):
                 if not category:
                     category = Category.objects.create(name=category_name)
 
-            listing = Listing(user=user,
+            listing = Listing(poster=request.user,
                               title=title,
                               description=description,
                               starting_bid=starting_bid,
@@ -127,6 +130,7 @@ def listing(request, id):
         in_watchlist = listing in User.objects.get(username=request.user).watchlist.all()
 
     category_name = None
+    comments = Comment.objects.filter(listing=listing)
 
     if listing.category:
         category_name = listing.category.name
@@ -137,11 +141,13 @@ def listing(request, id):
         "id": listing.id,
         "title": listing.title,
         "description": listing.description,
-        "user": listing.user,
+        "poster": listing.poster,
+        "user": request.user,
         "in_watchlist": in_watchlist,
         "category": category_name,
         "image": image,
-
+        "comments": comments,
+        "form": NewCommentForm(),
     })
 
 def watchlist(request):
@@ -154,15 +160,13 @@ def watchlist(request):
 def watch(request):
     if request.method == "POST":
         listing = Listing.objects.get(pk=request.POST["id"])
-        user = User.objects.get(username=request.user)
-        user.watchlist.add(listing)
+        User.objects.get(username=request.user).watchlist.add(listing)
         return HttpResponseRedirect(reverse("index"))
     
 def unwatch(request):
     if request.method == "POST":
         listing = Listing.objects.get(pk=request.POST["id"])
-        user = User.objects.get(username=request.user)
-        user.watchlist.remove(listing)
+        User.objects.get(username=request.user).watchlist.remove(listing)
         return HttpResponseRedirect(reverse("index"))
     
 def categories(request):
@@ -177,3 +181,19 @@ def category(request, name):
         "name": category.name,
         "listings": listings,
     })
+
+def comment(request, id):
+    if request.method == "POST":
+        form = NewCommentForm(request.POST)
+        if form.is_valid():
+            list = Listing.objects.get(pk=id)
+            text = form.cleaned_data["text"]
+
+            comment = Comment(poster=request.user,
+                              text=text,
+                              listing=list)
+            
+            comment.save()
+
+            # redirect to listing
+            return HttpResponseRedirect(reverse("listing", args=[list.id]))

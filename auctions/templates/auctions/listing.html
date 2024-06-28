@@ -9,7 +9,7 @@
     <a href="{% url 'index' %}">Back to Home</a>
     {% else %}
     <div>
-        Listed by {{ user }}
+        Listed by {{ poster }}
     </div>
 
     <div>
@@ -37,6 +37,7 @@
     {% endif %}
 
     <div>
+        <h4>Description:</h4>
         {{ description }}
     </div>
 
@@ -60,12 +61,22 @@
     {% endif %}
     {% endif %}
 
-    <div> 
-        TODO comments
+    <br>
+    <div class="comment"> 
+        <h4>Comments:</h4>
+        {% for comment in comments %}
+        <li>
+            {{ comment.poster }}: {{ comment.text }}
+        </li>
+        {% endfor %}
     </div>
     {% if user.is_authenticated %}
     <div>
-        TODO add comment
+        <form action="{% url "comment" id %}" method="post" id="newcomment">
+            {% csrf_token %}
+            {{ form }}
+            <input type="submit" value="Add Comment">
+        </form>
     </div>
     {% endif %}
     {% endif %}

@@ -14,4 +14,5 @@ urlpatterns = [
     path('unwatch', views.unwatch, name="unwatch"),
     path('categories', views.categories, name="categories"),
     path('category/<str:name>', views.category, name="category"),
+    path('comment/<int:id>', views.comment, name="comment"),
 ]

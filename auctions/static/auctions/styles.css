@@ -24,3 +24,7 @@ img {
 .info_div {
     display: inline-block;
 }
+
+.comment {
+    list-style-type: none;
+}

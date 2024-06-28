@@ -8,8 +8,19 @@ class User(AbstractUser):
 class Category(models.Model):
     name = models.CharField(max_length=200)
 
+    def __str__(self):
+        return f"{self.name}"
+
+class Bid(models.Model):
+    pass
+
+class Comment(models.Model):
+    text = models.CharField(max_length=200)
+    poster = models.ForeignKey(User, on_delete=models.CASCADE)
+    listing = models.ForeignKey('Listing', on_delete=models.CASCADE)
+
 class Listing(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    poster = models.ForeignKey(User, on_delete=models.CASCADE)
     title = models.CharField(max_length=64)
     description =  models.CharField(max_length=200)
     starting_bid = models.IntegerField()
@@ -19,9 +30,3 @@ class Listing(models.Model):
 
     def __str__(self):
         return f"{self.title} starting at {self.starting_bid} by {self.user}"
-
-class Bid(models.Model):
-    pass
-
-class Comment(models.Model):
-    pass
