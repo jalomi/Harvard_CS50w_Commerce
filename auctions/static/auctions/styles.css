@@ -1,3 +1,30 @@
 body {
     padding: 10px;
 }
+
+img {
+    max-height: 50vh;
+}
+
+.thumbnail {
+    max-height: 20vh;
+}
+
+.listing_div {
+    list-style-type: none;
+    border: solid thin;
+    margin: 2px;
+}
+
+.img_div {
+    display: inline-block;
+    width: 30%;
+}
+
+.info_div {
+    display: inline-block;
+}
+
+.comment {
+    list-style-type: none;
+}

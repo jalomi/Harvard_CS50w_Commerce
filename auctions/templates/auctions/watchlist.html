@@ -1,10 +1,9 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
-    <h2>Active Listings</h2>
+    <h2>Watchlist for {{ user }}</h2>
 
     {% for listing in listings %}
-        {% if listing.open %}
         <li class="listing_div">
             <div class="img_div">
                 {% if listing.img_url %}
@@ -17,6 +16,5 @@
                 <div>Current Price: ${{ listing.price }}</div>
             </div>
         </li>
-        {% endif %}
     {% endfor %}
 {% endblock %}

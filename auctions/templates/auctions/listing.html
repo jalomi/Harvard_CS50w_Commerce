@@ -1,0 +1,103 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <h2>Listing: {{ title }}</h2>
+
+    {% if error %}
+    {{ error }}
+    <br>
+    <a href="{% url 'index' %}">Back to Home</a>
+    {% elif closed %}
+    {% if winner %}
+        Congratulations! You have won the auction for this item!
+    {% else %}
+        Sorry, this item is no longer avaliable
+    {% endif %}
+    {% else %}
+    <div>
+        Listed by {{ poster }}
+    </div>
+
+    {% if category %}
+    <div>
+        Category: <a href="{% url "category" category %}">{{ category }}</a>
+    </div>
+    {% endif %}
+
+    <div>
+    {% if image %}
+        <img src="{{image}}" alt="{{ title }}">
+    {% else %}
+        No image avaliable
+    {% endif %}
+    </div>
+
+    <div>
+        <h3>Current Price: $ {{ price }}</h5>
+    </div>
+
+    {% if user.is_authenticated %}
+    {% if owner %}
+    {% if bids %}
+    <div>
+        <form action="{% url "close" id %}">
+            <input type="submit" value="Close Auction">
+        </form>
+    </div>
+    {% endif %}
+    {% else %}
+    <div>
+        <form action="{% url "bid" id %}" method="post" id="newbid">
+            {% csrf_token %}
+            {{ bid_form }}
+            <input type="submit" value="Bid on Item">
+        </form>
+    </div>
+    {% endif %}
+    {% endif %}
+
+    <div>
+        <h4>Description:</h4>
+        {{ description }}
+    </div>
+
+    {% if user.is_authenticated %}
+    {% if in_watchlist %}
+    <div>
+        <form action="{% url "unwatch" %}" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="id" value={{id}}>
+            <input type="submit" value="Remove From Watchlist">
+        </form>
+    </div>
+    {% else %}
+    <div>
+        <form action="{% url "watch" %}" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="id" value={{id}}>
+            <input type="submit" value="Add to Watchlist">
+        </form>
+    </div>
+    {% endif %}
+    {% endif %}
+
+    <br>
+    <div class="comment"> 
+        <h4>Comments:</h4>
+        {% for comment in comments %}
+        <li>
+            {{ comment.poster }}: {{ comment.text }}
+        </li>
+        {% endfor %}
+    </div>
+    {% if user.is_authenticated %}
+    <div>
+        <form action="{% url "comment" id %}" method="post" id="newcomment">
+            {% csrf_token %}
+            {{ comment_form }}
+            <input type="submit" value="Add Comment">
+        </form>
+    </div>
+    {% endif %}
+    {% endif %}
+{% endblock %}
