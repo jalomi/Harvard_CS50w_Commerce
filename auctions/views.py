@@ -5,7 +5,7 @@ from django.shortcuts import render
 from django.urls import reverse
 from django import forms
 
-from .models import User, Listing, Category, Comment
+from .models import User, Listing, Category, Comment, Bid
 
 class NewListingForm(forms.Form):
     title = forms.CharField(label="",
@@ -25,6 +25,10 @@ class NewListingForm(forms.Form):
 class NewCommentForm(forms.Form):
     text = forms.CharField(label="",
                             widget=forms.TextInput(attrs={"placeholder":"Add Comment"}))
+    
+class NewBidForm(forms.Form):
+    value = forms.IntegerField(label="",
+                               widget=forms.NumberInput(attrs={"placeholder":"Bid"}))
 
 def index(request):
     return render(request, "auctions/index.html", {
@@ -137,17 +141,31 @@ def listing(request, id):
 
     image = listing.img_url
 
+    owner = request.user == listing.poster
+
+    bids = Bid.objects.filter(listing=listing).count() > 0
+    
+    winner = False
+    if request.user.is_authenticated:
+        winner = listing in User.objects.get(username=request.user).wins.all()
+
     return render(request, "auctions/listing.html", {
         "id": listing.id,
         "title": listing.title,
         "description": listing.description,
         "poster": listing.poster,
         "user": request.user,
+        "owner": owner,
         "in_watchlist": in_watchlist,
         "category": category_name,
+        "price": listing.price,
         "image": image,
         "comments": comments,
-        "form": NewCommentForm(),
+        "comment_form": NewCommentForm(),
+        "bid_form": NewBidForm(),
+        "closed": not listing.open,
+        "winner": winner,
+        "bids": bids,
     })
 
 def watchlist(request):
@@ -197,3 +215,41 @@ def comment(request, id):
 
             # redirect to listing
             return HttpResponseRedirect(reverse("listing", args=[list.id]))
+        
+def bid(request, id):
+    if request.method == "POST":
+        form = NewBidForm(request.POST)
+        if form.is_valid():
+            value = form.cleaned_data["value"]
+
+            if value <= list.price:
+                return render(request, "auctions/listing.html", {
+                    "error": "ERROR: Your bid is too low"
+                })
+
+            list = Listing.objects.get(pk=id)
+
+            bid = Bid(bidder=request.user,
+                      value=value,
+                      listing=list)
+            
+            bid.save()
+
+            list.price = value
+            list.save()
+
+            # redirect to listing
+            return HttpResponseRedirect(reverse("listing", args=[list.id]))
+
+def close(request, id):
+    list = Listing.objects.get(pk=id)
+    bids = Bid.objects.filter(listing=list)
+    bid = bids.latest('value')
+
+    list.open = False
+    list.save()
+
+    bid.bidder.wins.add(list)
+
+    # redirect to listing
+    return HttpResponseRedirect(reverse("listing", args=[list.id]))

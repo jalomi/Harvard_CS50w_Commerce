@@ -7,10 +7,22 @@
     {{ error }}
     <br>
     <a href="{% url 'index' %}">Back to Home</a>
+    {% elif closed %}
+    {% if winner %}
+        Congratulations! You have won the auction for this item!
+    {% else %}
+        Sorry, this item is no longer avaliable
+    {% endif %}
     {% else %}
     <div>
         Listed by {{ poster }}
     </div>
+
+    {% if category %}
+    <div>
+        Category: <a href="{% url "category" category %}">{{ category }}</a>
+    </div>
+    {% endif %}
 
     <div>
     {% if image %}
@@ -21,19 +33,27 @@
     </div>
 
     <div>
-        TODO current price
+        <h3>Current Price: $ {{ price }}</h5>
     </div>
-
-    {% if category %}
-    <div>
-        Category: <a href="{% url "category" category %}">{{ category }}</a>
-    </div>
-    {% endif %}
 
     {% if user.is_authenticated %}
+    {% if owner %}
+    {% if bids %}
     <div>
-        TODO bid or close auction
+        <form action="{% url "close" id %}">
+            <input type="submit" value="Close Auction">
+        </form>
     </div>
+    {% endif %}
+    {% else %}
+    <div>
+        <form action="{% url "bid" id %}" method="post" id="newbid">
+            {% csrf_token %}
+            {{ bid_form }}
+            <input type="submit" value="Bid on Item">
+        </form>
+    </div>
+    {% endif %}
     {% endif %}
 
     <div>
@@ -74,7 +94,7 @@
     <div>
         <form action="{% url "comment" id %}" method="post" id="newcomment">
             {% csrf_token %}
-            {{ form }}
+            {{ comment_form }}
             <input type="submit" value="Add Comment">
         </form>
     </div>
